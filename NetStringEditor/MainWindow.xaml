@@ -5,8 +5,74 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetStringEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="{Binding Assembly.FullName, StringFormat=NetStringEditor - {0}, FallbackValue=NetStringEditor }" Height="500" Width="750" d:DataContext="{d:DesignInstance Type=local:CompiledAssembly, IsDesignTimeCreatable=False}">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="File">
+                <MenuItem Header="Open" Click="OpenMenuItem_Click" />
+                <MenuItem Header="Save As" Click="SaveMenuItem_Click" />
+            </MenuItem>
+        </Menu>
+        <DataGrid Grid.Row="1" AlternatingRowBackground="WhiteSmoke" AlternationCount="2" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="True"
+				  CanUserResizeColumns="True" CanUserResizeRows="True" CanUserSortColumns="True" ItemsSource="{Binding Strings}" Name="StringsTable" HorizontalScrollBarVisibility="Visible"
+				  VerticalScrollBarVisibility="Visible">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Dirty?">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Ellipse Fill="Red" Width="10" Height="10" Margin="2">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Visibility" Value="Hidden" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDirty}" Value="true">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Location" Binding="{Binding Location}" IsReadOnly="True" Width="140" />
+                <DataGridTextColumn Header="Value" Binding="{Binding Value, Mode=TwoWay}" Width="330">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="AcceptsTab" Value="True" />
+                            <EventSetter Event="KeyDown" Handler="OnTextBoxKeyDown"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Hex (UTF16)" Binding="{Binding HexValue}" IsReadOnly="True" Width="200">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Reset Value" Click="ResetContextItem_Click" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock><Run Text="{Binding Strings.Count, Mode=OneWay, FallbackValue=0, StringFormat=N0}"/> Strings</TextBlock>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
